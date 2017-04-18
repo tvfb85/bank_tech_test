@@ -6,21 +6,11 @@
   };
 
   Account.prototype.deposit = function(amount) {
-    this.clearTransactionChecks('credit', amount) ? this.updateAccountForDepositTransaction(amount) : this._declineTransation();
+    this._clearTransactionChecks('credit', amount) ? this.updateAccountForDepositTransaction(amount) : this._declineTransaction();
   };
 
   Account.prototype.withdraw = function(amount) {
-    this.clearTransactionChecks('debit', amount) ? this.updateAccountForWithdrawalTransaction(amount) : this._declineTransation();
-  };
-
-  Account.prototype.updateAccountForDepositTransaction = function(amount) {
-    this.balance += amount;
-    this._recordTransaction('credit', amount);
-  };
-
-  Account.prototype.updateAccountForWithdrawalTransaction = function(amount) {
-    this.balance -= amount;
-    this._recordTransaction('debit', amount);
+    this._clearTransactionChecks('debit', amount) ? this.updateAccountForWithdrawalTransaction(amount) : this._declineTransaction();
   };
 
   Account.prototype.printBalance = function () {
@@ -31,7 +21,19 @@
     console.table(this.transactions);
   };
 
-  Account.prototype.clearTransactionChecks = function(transactionType, amount) {
+  Account.prototype._updateAccountForDepositTransaction = function(amount) {
+    this.balance += amount;
+    var transaction = new Transaction(amount, 0, this.balance);
+    this._recordTransaction(transaction);
+  };
+
+  Account.prototype._updateAccountForWithdrawalTransaction = function(amount) {
+    this.balance -= amount;
+    var transaction = new Transaction(0, amount, this.balance);
+    this._recordTransaction(transaction);
+  };
+
+  Account.prototype._clearTransactionChecks = function(transactionType, amount) {
     if (transactionType === 'credit') {
       return (this._isPositiveValue(amount));
     } else if (transactionType === 'debit') {
@@ -47,17 +49,19 @@
     return this.balance - amount >= 0;
   };
 
-  Account.prototype._declineTransation = function() {
+  Account.prototype._declineTransaction = function() {
     throw new Error("Transaction denied");
   };
 
-  Account.prototype._recordTransaction = function(transactionType, amount) {
-    var today = new Date();
-    if (transactionType = 'credit') {
-      this.transactions.push({Date: today.toDateString(), Credit: amount, Debit: '-', Balance: this.balance});
-    } else if (transactionType = 'debit') {
-      this.transactions.push({Date: today.toDateString(), Credit: '-', Debit: amount, Balance: this.balance});
-    }
+  Account.prototype._recordTransaction = function(transaction) {
+    this.transactions.push(transaction);
+    // var today = new Date();
+    // if (transactionType = 'credit') {
+    //
+    //   this.transactions.push({Date: today.toDateString(), Credit: amount, Debit: '-', Balance: this.balance});
+    // } else if (transactionType = 'debit') {
+    //   this.transactions.push({Date: today.toDateString(), Credit: '-', Debit: amount, Balance: this.balance});
+    // }
   };
 
   exports.Account = Account;

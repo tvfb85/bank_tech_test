@@ -51,7 +51,7 @@ describe('Account', function() {
   it('saves the date of a transaction', function() {
     account.deposit(5);
     var today = new Date();
-    expect(account.transactions[0]['Date']).toEqual(today.toDateString());
+    expect(account.transactions[0]['date']).toEqual(today.toDateString());
   })
 
 
