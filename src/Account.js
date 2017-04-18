@@ -6,34 +6,37 @@
   };
 
   Account.prototype.deposit = function(amount) {
-    (this._isPositiveValue(amount)) ? this.updateAccountForDeposit(amount) : this._declineTransation("cannot deposit negative values");
-
-  };
-
-  Account.prototype.updateAccountForDeposit = function(amount) {
-    this.balance += amount;
-    var today = new Date();
-    this.transactions.push({Date: today.toDateString(), Credit: amount, Debit: 0, Balance: this.balance});
+    this.clearTransactionChecks('credit', amount) ? this.updateAccountForDepositTransaction(amount) : this._declineTransation();
   };
 
   Account.prototype.withdraw = function(amount) {
-    if (!this._isPositiveValue(amount)) {
-      this._declineTransation("cannot withdraw negative values")
-    } else if (!this._isSufficientFundsAvailable(amount)) {
-      this._declineTransation("insufficient funds available");
-    } else {
-      this.updateAccountForWithdrawal(amount);
-    }
+    this.clearTransactionChecks('debit', amount) ? this.updateAccountForWithdrawalTransaction(amount) : this._declineTransation();
   };
 
-  Account.prototype.updateAccountForWithdrawal = function(amount) {
+  Account.prototype.updateAccountForDepositTransaction = function(amount) {
+    this.balance += amount;
+    this._recordTransaction('credit', amount);
+  };
+
+  Account.prototype.updateAccountForWithdrawalTransaction = function(amount) {
     this.balance -= amount;
-    var today = new Date();
-    this.transactions.push({Date: today.toDateString(), Credit: 0, Debit: amount, Balance: this.balance});
+    this._recordTransaction('debit', amount);
+  };
+
+  Account.prototype.printBalance = function () {
+    return "Balance: " + this.balance;
   };
 
   Account.prototype.printStatement = function() {
-    return "Balance: " + this.balance;
+    console.table(this.transactions);
+  };
+
+  Account.prototype.clearTransactionChecks = function(transactionType, amount) {
+    if (transactionType === 'credit') {
+      return (this._isPositiveValue(amount));
+    } else if (transactionType === 'debit') {
+      return (this._isPositiveValue(amount) && this._isSufficientFundsAvailable(amount));
+    }
   };
 
   Account.prototype._isPositiveValue = function(amount) {
@@ -44,8 +47,17 @@
     return this.balance - amount >= 0;
   };
 
-  Account.prototype._declineTransation = function(reason) {
-    throw new Error("Transaction failed: " + reason);
+  Account.prototype._declineTransation = function() {
+    throw new Error("Transaction denied");
+  };
+
+  Account.prototype._recordTransaction = function(transactionType, amount) {
+    var today = new Date();
+    if (transactionType = 'credit') {
+      this.transactions.push({Date: today.toDateString(), Credit: amount, Debit: '-', Balance: this.balance});
+    } else if (transactionType = 'debit') {
+      this.transactions.push({Date: today.toDateString(), Credit: '-', Debit: amount, Balance: this.balance});
+    }
   };
 
   exports.Account = Account;
