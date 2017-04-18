@@ -8,4 +8,5 @@
   };
 
   exports.Transaction = Transaction;
+  
 })(this);

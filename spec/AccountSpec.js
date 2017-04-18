@@ -45,18 +45,19 @@ describe('Account', function() {
 
   it('keeps a transaction log', function() {
     account.deposit(5);
-    expect(account.transactions.length).toEqual(1);
+    expect(account.statement.transactions.length).toEqual(1);
   })
 
   it('saves the date of a transaction', function() {
     account.deposit(5);
     var today = new Date();
-    expect(account.transactions[0]['date']).toEqual(today.toDateString());
+    expect(account.statement.transactions[0]['date']).toEqual(today.toDateString());
   })
 
 
   // overdraft limit? checks for if this is exceeded
   // save money to two-decimal places
-  // add £ sign to values
+  // move specs to transactionSpec
+  // readme
 
 })
