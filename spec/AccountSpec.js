@@ -9,12 +9,12 @@ describe('Account', function() {
     expect(account.balance).toEqual(0);
   })
 
-  it('the balance can be topped up', function() {
+  it('money can be deposited', function() {
     account.deposit(5);
     expect(account.balance).toEqual(5);
   })
 
-  it('the balance can be deducted', function() {
+  it('money can be withdrawn', function() {
     account.deposit(50);
     account.withdraw(5);
     expect(account.balance).toEqual(45);
@@ -42,6 +42,17 @@ describe('Account', function() {
 
   it('can print the balance', function() {
     expect(account.printStatement()).toEqual("Balance: 0");
+  })
+
+  it('keeps a transaction log', function() {
+    account.deposit(5);
+    expect(account.transactions.length).toEqual(1);
+  })
+
+  it('saves the date of a transaction', function() {
+    account.deposit(5);
+    var today = new Date();
+    expect(account.transactions[0]['Date']).toEqual(today.toDateString());
   })
 
 
